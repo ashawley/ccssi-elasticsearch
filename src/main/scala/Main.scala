@@ -3,6 +3,7 @@ package ccssi
 // import java.lang._
 import scala._
 import scala.Predef._
+import scala.collection.parallel.mutable.ParArray
 import scala.util.Success
 import scala.util.Failure
 import scala.util.matching.Regex
@@ -119,9 +120,9 @@ object Main {
     }
 
     // Read the files, upload JSON item one-at-a-time:
-    val uploads: Traversable[Future[FileUploaded]] =
+    val uploads: ParArray[Future[FileUploaded]] =
       for {
-        file <- args.toTraversable
+        file <- args.par
       } yield {
         val processed: Future[FileUploaded] =
           for {
@@ -154,7 +155,7 @@ object Main {
     } flatMap { _ =>
 
       for {
-        u <- Future.sequence(uploads)
+        u <- Future.sequence(uploads.toArray.toTraversable)
       } yield {
         println(s"File count: ${u.size}")
         u
