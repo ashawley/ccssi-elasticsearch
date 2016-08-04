@@ -24,9 +24,7 @@ scalacOptions in (Compile) ++= Seq(
 )
 
 libraryDependencies ++= List(
-  "org.scalactic" %% "scalactic" % "2.2.6",
-  "net.databinder.dispatch" %% "dispatch-core" % "0.11.4-SNAPSHOT",
-  "net.databinder.dispatch" %% "dispatch-json4s-native" % "0.11.3",
-  "org.json4s" %% "json4s-native" % "3.2.11" withSources(),
-  "org.json4s" %% "json4s-jackson" % "3.2.11"
+  "net.databinder.dispatch" %% "dispatch-core" % "0.11.2",
+  "net.databinder.dispatch" %% "dispatch-json4s-native" % "0.11.2",
+  "org.json4s" %% "json4s-native" % "3.2.10"
 )

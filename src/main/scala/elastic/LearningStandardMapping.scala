@@ -4,7 +4,7 @@ package elastic
 import scala.Predef._
 
 import org.json4s.JsonDSL._
-import org.json4s.jackson.JsonMethods._
+import org.json4s.native.JsonMethods._
 
 object LearningStandardMapping {
 

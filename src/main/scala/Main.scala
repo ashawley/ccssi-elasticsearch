@@ -25,8 +25,8 @@ case class FileUploaded(file: String, count: BigInt)
 object Main {
 
   val http = Http.configure { config: AsyncHttpClientConfig.Builder =>
-    config.setAllowPoolingConnections(true)
-    // Doesn't work in 11.3:
+    config.setAllowPoolingConnection(true)
+    // Doesn't work in dispatch-11.3:
     // config.setMaxConnections(4)
     // Alternatively:
     config.addRequestFilter(new ThrottleRequestFilter(4))
@@ -171,9 +171,6 @@ object Main {
     } catch {
       case t: Throwable => println(t)
 
-    } finally {
-      // Probably unnecessary, since the API should handle it:
-      http.shutdown 
     }
   }
 
