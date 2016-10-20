@@ -22,6 +22,60 @@ import org.json4s.native.JsonMethods._
 // Unit of computation we want from the future.
 case class FileUploaded(file: String, count: BigInt)
 
+
+trait ElasticLoadActions {
+  def checkRoot: Future[_]
+  def deleteIndex: Future[_]
+  def addMapping: Future[_]
+  def checkIndexes: Future[_]
+  def uploads: Traversable[Future[AnyRef]] // ???
+}
+
+trait ElasticLoadBatch {
+  def batch: Future[Traversable[_]]
+}
+
+trait ChandlerElasticLoad extends ElasticLoadBatch { this: ElasticLoadActions =>
+  lazy val step1 = Future.sequence(Seq(checkRoot, deleteIndex))
+  lazy val step2 = Future.sequence(Seq(addMapping, checkIndexes))
+  lazy val step3 = Future.sequence(uploads)
+
+  val batch = step1
+    .flatMap(_ => step2)
+    .flatMap(_ => step3)
+    .map(upload => upload)
+}
+
+trait OldElasticLoad extends ElasticLoadBatch { this: ElasticLoadActions =>
+  // Use for-comprehensions to combine independent futures, and use
+  // flatMap to separate dependent futures.
+  val batch = {
+
+    for {
+      r <- checkRoot
+      d <- deleteIndex
+    } yield {
+    }
+
+  } flatMap { _ =>
+
+    for {
+      m <- addMapping
+      i <- checkIndexes
+    } yield {
+    }
+
+  } flatMap { _ =>
+
+    for {
+      u <- Future.sequence(uploads.toArray.toTraversable)
+    } yield {
+      println(s"File count: ${u.size}")
+      u
+    }
+  }
+}
+
 object Main {
 
   val http = Http.configure { config: AsyncHttpClientConfig.Builder =>
@@ -48,6 +102,8 @@ object Main {
 
   def main(args: Array[String]) = {
 
+    // val elasticLoad = new ElasticLoadBatch with ElasticLoad {
+    
     // For sanity's sake:
     val checkRoot: Future[JValue] = http(elasticHost OK as.json4s.Json)
 
@@ -134,34 +190,15 @@ object Main {
         processed
       }
 
-    // Use for-comprehensions to combine independent futures, and use
-    // flatMap to separate dependent futures.
-    val batch: Future[Traversable[FileUploaded]] = {
+    lazy val step1 = Future.sequence(Seq(checkRoot, deleteIndex))
+    lazy val step2 = Future.sequence(Seq(addMapping, checkIndexes))
+    lazy val step3 = Future.sequence(uploads.toArray.toTraversable)
 
-      for {
-        r <- checkRoot
-        d <- deleteIndex
-      } yield {
-      }
-
-    } flatMap { _ =>
-
-      for {
-        m <- addMapping
-        i <- checkIndexes
-      } yield {
-      }
-
-    } flatMap { _ =>
-
-      for {
-        u <- Future.sequence(uploads.toArray.toTraversable)
-      } yield {
-        println(s"File count: ${u.size}")
-        u
-      }
-    }
-
+    val batch = step1
+      .flatMap(_ => step2)
+      .flatMap(_ => step3)
+      .map(upload => upload)
+    // }
     try {
 
       // Wait forever for everything to finish
