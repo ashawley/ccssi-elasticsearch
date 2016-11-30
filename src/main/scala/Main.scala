@@ -78,7 +78,7 @@ object Main {
 
         case Failure(t) => {
           println("Failed to get checkRoot")
-          println(t)
+          println(t.getMessage)
         }
       }
 
@@ -91,7 +91,7 @@ object Main {
 
         case Failure(t) => {
           println("Failed to deleteIndex index")
-          println(t)
+          println(t.getMessage)
         }
       }
 
@@ -101,7 +101,7 @@ object Main {
 
         case Failure(t) => {
           println("Failed to retrieve indices")
-          println(t)
+          println(t.getMessage)
         }
       }
 
@@ -114,7 +114,7 @@ object Main {
 
         case Failure(t) => {
           println("Failed to create index mapping")
-          println(t)
+          println(t.getMessage)
         }
       }
     }
@@ -169,7 +169,7 @@ object Main {
       println("FINISHED")
 
     } catch {
-      case t: Throwable => println(t)
+      case t: Throwable => println(t.getMessage)
 
     }
   }
@@ -211,7 +211,7 @@ object Main {
             }
             case Failure(t) => {
               println("FAIL")
-              println(t)
+              println(t.getMessage)
             }
           }
           response
