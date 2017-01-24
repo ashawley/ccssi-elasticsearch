@@ -25,7 +25,7 @@ case class FileUploaded(file: String, count: BigInt)
 object Main {
 
   val http = Http.configure { config: AsyncHttpClientConfig.Builder =>
-    config.setAllowPoolingConnection(true)
+    config.setAllowPoolingConnections(true)
     // Doesn't work in dispatch-11.3:
     // config.setMaxConnections(4)
     // Alternatively:
